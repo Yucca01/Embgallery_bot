@@ -1,4 +1,5 @@
 print("✅ Бот запущен на Render")
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler,
@@ -11,19 +12,19 @@ import os
 # Состояния диалога
 PHOTO, SIZE, FORMAT, DETAILS, CONFIRM = range(5)
 
-# Замените на ваш Telegram ID
+# Telegram ID администратора
 ADMIN_CHAT_ID = "439141567"
 
 # Стартовая команда
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(f"📩 /start от @{update.effective_user.username}")  # ← вот эта строка
+    print(f"📩 /start от @{update.effective_user.username}")
     context.user_data['name'] = update.effective_user.full_name
     context.user_data['username'] = update.effective_user.username
     context.user_data['date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     await update.message.reply_text("Здравствуйте! Пожалуйста, отправьте изображение для вышивки.")
     return PHOTO
 
-# Получение изображения (фото или файл)
+# Получение изображения
 async def receive_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.photo:
         photo = update.message.photo[-1]
@@ -78,7 +79,6 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data == "confirm":
         save_order_to_excel(context.user_data)
-
         await context.bot.send_photo(
             chat_id=ADMIN_CHAT_ID,
             photo=context.user_data['photo_id'],
@@ -91,7 +91,6 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Пожелания: {context.user_data['details']}"
             )
         )
-
         await query.edit_message_text("✅ Ваш заказ подтверждён и отправлен на обработку.")
     else:
         await query.edit_message_text("❌ Заказ отменён. Вы можете начать заново с /start.")
@@ -121,9 +120,9 @@ def save_order_to_excel(data):
     wb.save(file_name)
 
 # Запуск бота
-import os
 app = ApplicationBuilder().token(os.getenv("BOT_TOKEN")).build()
 
+# Обработчик диалога
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
     states={
@@ -133,19 +132,20 @@ conv_handler = ConversationHandler(
         DETAILS: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_details)],
         CONFIRM: [CallbackQueryHandler(confirm_order)],
     },
-    fallbacks=[]
+    fallbacks=[],
+    per_message=True  # ← важно для стабильной работы кнопок
 )
 
-# Добавление обработчика диалога
+# Добавление обработчиков
 app.add_handler(conv_handler)
+app.add_handler(CommandHandler("start", start))  # ← отдельно, чтобы всегда реагировать
 
+# Webhook URL от Render
 webhook_url = "https://embgallery-bot.onrender.com/webhook"
 
+# Запуск через webhook
 app.run_webhook(
     listen="0.0.0.0",
     port=int(os.environ.get("PORT", 10000)),
     webhook_url=webhook_url
 )
-
-
-
