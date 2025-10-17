@@ -139,7 +139,7 @@ conv_handler = ConversationHandler(
 # Добавление обработчика диалога
 app.add_handler(conv_handler)
 
-webhook_url = "https://embgallery.com/webhook"
+webhook_url = "https://embgallery-bot.onrender.com/webhook"
 
 app.run_webhook(
     listen="0.0.0.0",
