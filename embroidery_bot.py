@@ -136,4 +136,12 @@ conv_handler = ConversationHandler(
 )
 
 app.add_handler(conv_handler)
-app.run_polling()
+# Запуск бота через webhook
+WEBHOOK_URL = f"https://{os.getenv('RENDER_EXTERNAL_URL')}/webhook"
+
+app.run_webhook(
+    listen="0.0.0.0",
+    port=int(os.environ.get("PORT", 10000)),
+    webhook_url=WEBHOOK_URL
+)
+
