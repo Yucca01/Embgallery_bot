@@ -135,13 +135,17 @@ conv_handler = ConversationHandler(
     fallbacks=[]
 )
 
+# Добавление обработчика диалога
 app.add_handler(conv_handler)
-# Запуск бота через webhook
+
+# Определение URL webhook — обязательно с HTTPS
 WEBHOOK_URL = "https://embgallery.com/webhook"
 
+# Запуск бота через webhook
 app.run_webhook(
     listen="0.0.0.0",
     port=int(os.environ.get("PORT", 10000)),
     webhook_url=WEBHOOK_URL
 )
+
 
