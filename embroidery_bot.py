@@ -137,7 +137,7 @@ conv_handler = ConversationHandler(
 
 app.add_handler(conv_handler)
 # Запуск бота через webhook
-WEBHOOK_URL = f"https://{os.getenv('RENDER_EXTERNAL_URL')}/webhook"
+webhook_url="https://embgallery.com/webhook"
 
 app.run_webhook(
     listen="0.0.0.0",
