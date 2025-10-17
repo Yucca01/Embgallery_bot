@@ -146,8 +146,7 @@ WEBHOOK_URL = "https://embgallery.com/"
 app.run_webhook(
     listen="0.0.0.0",
     port=int(os.environ.get("PORT", 10000)),
-    webhook_url=WEBHOOK_URL,
-    webhook_path="/"  # ← обязательно!
+    WEBHOOK_URL = "https://embgallery.com/webhook"
 )
 
 
