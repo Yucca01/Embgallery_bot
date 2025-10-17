@@ -26,6 +26,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Получение изображения
 async def receive_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print("📷 receive_photo вызван")
     if update.message.photo:
         photo = update.message.photo[-1]
         context.user_data['photo_id'] = photo.file_id
