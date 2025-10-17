@@ -18,6 +18,7 @@ ADMIN_CHAT_ID = "439141567"
 # Стартовая команда
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f"📩 /start от @{update.effective_user.username}")
+    context.user_data.clear()
     context.user_data['name'] = update.effective_user.full_name
     context.user_data['username'] = update.effective_user.username
     context.user_data['date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -92,11 +93,27 @@ async def confirm_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Пожелания: {context.user_data['details']}"
             )
         )
-        await query.edit_message_text("✅ Ваш заказ подтверждён и отправлен на обработку.")
+        keyboard = [[InlineKeyboardButton("🆕 Новый заказ", callback_data="new_order")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text(
+            "✅ Ваш заказ подтверждён и отправлен на обработку.\n\n"
+            "Если хотите оформить ещё один — нажмите кнопку ниже.",
+            reply_markup=reply_markup
+        )
+        return CONFIRM
     else:
         await query.edit_message_text("❌ Заказ отменён. Вы можете начать заново с /start.")
+        return ConversationHandler.END
 
-    return ConversationHandler.END
+# Новый заказ без /start
+async def start_new_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.callback_query.answer()
+    context.user_data.clear()
+    context.user_data['name'] = update.effective_user.full_name
+    context.user_data['username'] = update.effective_user.username
+    context.user_data['date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    await update.callback_query.message.reply_text("🆕 Новый заказ: пожалуйста, отправьте изображение.")
+    return PHOTO
 
 # Сохранение заказа в Excel
 def save_order_to_excel(data):
@@ -131,15 +148,16 @@ conv_handler = ConversationHandler(
         SIZE: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_size)],
         FORMAT: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_format)],
         DETAILS: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_details)],
-        CONFIRM: [CallbackQueryHandler(confirm_order)],
+        CONFIRM: [
+            CallbackQueryHandler(confirm_order, pattern="^(confirm|cancel)$"),
+            CallbackQueryHandler(start_new_order, pattern="^new_order$")
+        ],
     },
     fallbacks=[],
-    per_message=True  # ← важно для стабильной работы кнопок
+    per_message=True
 )
 
-# Добавление обработчиков
 app.add_handler(conv_handler)
-app.add_handler(CommandHandler("start", start))  # ← отдельно, чтобы всегда реагировать
 
 # Webhook URL от Render
 webhook_url = "https://embgallery-bot.onrender.com"
