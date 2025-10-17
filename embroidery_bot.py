@@ -139,7 +139,7 @@ conv_handler = ConversationHandler(
 app.add_handler(conv_handler)
 
 # Определение URL webhook — обязательно с HTTPS
-WEBHOOK_URL = "https://embgallery.com/webhook"
+WEBHOOK_URL = "https://embgallery.com/"
 
 # Запуск бота через webhook
 app.run_webhook(
