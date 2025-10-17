@@ -141,7 +141,7 @@ app.add_handler(conv_handler)
 app.add_handler(CommandHandler("start", start))  # ← отдельно, чтобы всегда реагировать
 
 # Webhook URL от Render
-webhook_url = "https://embgallery-bot.onrender.com/webhook"
+webhook_url = "https://embgallery-bot.onrender.com"
 
 # Запуск через webhook
 app.run_webhook(
