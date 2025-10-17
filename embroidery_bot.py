@@ -1,3 +1,4 @@
+print("✅ Бот запущен на Render")
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler,
