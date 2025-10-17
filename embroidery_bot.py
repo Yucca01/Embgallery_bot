@@ -16,6 +16,7 @@ ADMIN_CHAT_ID = "439141567"
 
 # Стартовая команда
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(f"📩 /start от @{update.effective_user.username}")  # ← вот эта строка
     context.user_data['name'] = update.effective_user.full_name
     context.user_data['username'] = update.effective_user.username
     context.user_data['date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
