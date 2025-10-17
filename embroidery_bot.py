@@ -119,7 +119,8 @@ def save_order_to_excel(data):
     wb.save(file_name)
 
 # Запуск бота
-app = ApplicationBuilder().token("BOT_TOKEN").build()
+import os
+app = ApplicationBuilder().token(os.getenv("BOT_TOKEN")).build()
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
